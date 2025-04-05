@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar & Spell Checker Bot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?w=1600') no-repeat center center/cover;
+            color: white;
+            text-align: center;
+        }
+        .container {
+            width: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.3);
+            color: black;
+        }
+        img {
+            width: 120px;
+            margin-bottom: 15px;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        p {
+            font-weight: bold;
+            color: #555;
+        }
+        textarea {
+            width: 100%;
+            height: 140px;
+            padding: 12px;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            resize: none;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+        textarea:focus {
+            border-color: #0056b3;
+            box-shadow: 0 0 10px rgba(0, 91, 187, 0.3);
+        }
+        button {
+            margin-top: 15px;
+            padding: 12px 30px;
+            background: #007bff;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+        }
+        .output {
+            margin-top: 20px;
+            padding: 15px;
+            border: 2px solid #007bff;
+            background: #f9f9f9;
+            min-height: 80px;
+            border-radius: 8px;
+            font-size: 16px;
+            color: black;
+            box-shadow: inset 0 0 10px rgba(0, 91, 187, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="LPU Logo.png" alt="LPU Logo">
+        <h2>𝐆𝐫𝐚𝐦𝐦𝐚𝐫 𝐂𝐡𝐞𝐜𝐤𝐞𝐫 𝐁𝐨𝐭</h2>
+        <p><strong>Reg. No:</strong>12305889
+            <p><strong>Reg. No:</strong>12308076
+                <p><strong>Reg. No:</strong>12320125
+
+
+        </p>
+        <textarea id="inputText" placeholder="Enter your text..."></textarea>
+        <button onclick="checkGrammar()">Check for Mistakes</button>
+        <div class="output" id="outputText">Corrected text will appear here...</div>
+    </div>
+
+    <script>
+        async function checkGrammar() {
+            let text = document.getElementById("inputText").value;
+            if (text.trim() === "") {
+                document.getElementById("outputText").innerText = "Please enter some text.";
+                return;
+            }
+            
+            const url = "https://api.languagetool.org/v2/check";
+            const params = new URLSearchParams();
+            params.append("text", text);
+            params.append("language", "en-US");
+            
+            try {
+                let response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: params
+                });
+                let data = await response.json();
+                
+                let correctedText = text;
+                data.matches.forEach(match => {
+                    correctedText = correctedText.replace(match.context.text.substr(match.context.offset, match.context.length), match.replacements[0]?.value || match.context.text);
+                });
+                
+                document.getElementById("outputText").innerText = correctedText;
+            } catch (error) {
+                document.getElementById("outputText").innerText = "Error checking grammar. Try again later.";
+            }
+        }
+    </script>
+</body>
+</html>
