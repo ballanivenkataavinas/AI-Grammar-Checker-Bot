@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,6 +41,7 @@
         p {
             font-weight: bold;
             color: #555;
+            margin-bottom: 5px;
         }
         textarea {
             width: 100%;
@@ -86,14 +88,14 @@
 </head>
 <body>
     <div class="container">
-        <img src="LPU Logo.png" alt="LPU Logo">
+        <img src="LPU LOGO.jpeg" alt="LPU Logo">
+
+
         <h2>𝐆𝐫𝐚𝐦𝐦𝐚𝐫 𝐂𝐡𝐞𝐜𝐤𝐞𝐫 𝐁𝐨𝐭</h2>
-        <p><strong>Reg. No:</strong>12305889
-            <p><strong>Reg. No:</strong>12308076
-                <p><strong>Reg. No:</strong>12320125
+        <p><strong>Reg. No:</strong> 12305889</p>
+        <p><strong>Reg. No:</strong> 12308076</p>
+        <p><strong>Reg. No:</strong> 12320125</p>
 
-
-        </p>
         <textarea id="inputText" placeholder="Enter your text..."></textarea>
         <button onclick="checkGrammar()">Check for Mistakes</button>
         <div class="output" id="outputText">Corrected text will appear here...</div>
@@ -106,12 +108,12 @@
                 document.getElementById("outputText").innerText = "Please enter some text.";
                 return;
             }
-            
+
             const url = "https://api.languagetool.org/v2/check";
             const params = new URLSearchParams();
             params.append("text", text);
             params.append("language", "en-US");
-            
+
             try {
                 let response = await fetch(url, {
                     method: "POST",
@@ -119,12 +121,15 @@
                     body: params
                 });
                 let data = await response.json();
-                
+
                 let correctedText = text;
                 data.matches.forEach(match => {
-                    correctedText = correctedText.replace(match.context.text.substr(match.context.offset, match.context.length), match.replacements[0]?.value || match.context.text);
+                    if (match.replacements && match.replacements.length > 0) {
+                        let replacement = match.replacements[0].value;
+                        correctedText = correctedText.substring(0, match.offset) + replacement + correctedText.substring(match.offset + match.length);
+                    }
                 });
-                
+
                 document.getElementById("outputText").innerText = correctedText;
             } catch (error) {
                 document.getElementById("outputText").innerText = "Error checking grammar. Try again later.";
